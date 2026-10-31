@@ -1,5 +1,7 @@
 # Antigravity Plan Skill
 
+![Antigravity implementation plan preview](assets/antigravity-plan-header.png)
+
 An agent skill for writing reviewable implementation plans in the Antigravity
 `implementation_plan.md` style. It explores the project, describes changes per
 file, records decisions and blocking questions, and waits for approval before
@@ -78,3 +80,114 @@ format. This project is not affiliated with or endorsed by Google.
 ## License
 
 [MIT](LICENSE), copyright (c) 2026 Josua Sinaga.
+
+## Example plan
+
+The header image shows a plan for custom time signatures and compound meter.
+The example below demonstrates the same format in Bahasa Indonesia, including
+the four English anchor headings, review decisions, file changes, and checks.
+
+This example uses a fictional TypeScript metronome project. Its file paths,
+symbols, and npm scripts are illustrative. For your project, the agent must
+inspect the actual files and available commands before writing the plan.
+
+````markdown
+# Rencana Implementasi: Tanda Birama Kustom dan Perbaikan Birama 6/8
+
+Perbaiki perhitungan birama 6/8 agar menghasilkan dua ketukan besar,
+masing-masing berisi tiga langkah pada subdivisi normal. Tambahkan tanda
+birama kustom agar pengguna dapat menentukan pembilang dan penyebut sendiri.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Definisi ketukan dan langkah**
+> Untuk cakupan fitur ini, birama dengan penyebut 8 dan pembilang minimal 6
+> yang habis dibagi 3 diperlakukan sebagai compound meter: `beatsPerBar = N / 3`
+> dan `stepsPerBeat = 3 * subdivision`. Birama lain memakai
+> `beatsPerBar = N` dan `stepsPerBeat = subdivision`.
+> Contoh: 6/8 dengan subdivisi 1 menghasilkan 2 ketukan besar dan 6 langkah.
+
+> [!IMPORTANT]
+> **Batas tanda birama kustom**
+> Terima pembilang bilangan bulat 1 sampai 32 dan penyebut 1, 2, 4, 8,
+> atau 16. Dialog menampilkan pratinjau jumlah ketukan dan langkah sebelum
+> perubahan diterapkan. Pengelompokan khusus untuk birama seperti 7/8
+> berada di luar cakupan fitur ini.
+
+## Open Questions
+
+- Apakah perubahan tanda birama saat metronom berjalan berlaku pada bar
+  berikutnya atau langsung memulai ulang bar? Jawaban menentukan kapan
+  `scheduleBar()` menerapkan konfigurasi baru.
+
+---
+
+## Proposed Changes
+
+### 1. Perhitungan Birama
+
+#### [MODIFY] `src/lib/time-signature.ts`
+
+- Perbarui `calculateMeter()` untuk menghitung `beatsPerBar`,
+  `stepsPerBeat`, dan `stepsPerBar` menurut definisi yang disetujui.
+- Validasi pembilang, penyebut, dan subdivisi sebelum menghitung meter.
+- Pertahankan hasil 4 langkah untuk birama 4/4 dengan subdivisi 1.
+
+### 2. Penjadwalan Metronom
+
+#### [MODIFY] `src/audio/metronome.ts`
+
+- Gunakan hasil `calculateMeter()` di `scheduleBar()` agar seluruh
+  langkah dalam bar dijadwalkan dan aksen mengikuti ketukan besar.
+- Terapkan waktu pergantian birama sesuai jawaban pada `Open Questions`.
+
+### 3. Pemilihan Tanda Birama
+
+#### [NEW] `src/components/custom-time-signature-dialog.tsx`
+
+- Sediakan input pembilang dan pilihan penyebut dengan batas yang disetujui.
+- Tampilkan pratinjau ketukan dan langkah dari `calculateMeter()`.
+- Tampilkan kesalahan untuk input tidak valid dan cegah penerapannya.
+- Tombol Terapkan menyimpan pilihan; Batal menutup dialog tanpa perubahan.
+
+#### [MODIFY] `src/components/time-signature-select.tsx`
+
+- Tambahkan pilihan Kustom untuk membuka dialog.
+- Tampilkan tanda birama yang dipilih setelah pengguna menerapkannya.
+
+---
+
+## Verification Plan
+
+### Pengujian Otomatis
+
+```sh
+npm test
+npm run lint
+npm run typecheck
+npm run build
+```
+
+- `src/lib/time-signature.test.ts`: uji 4/4, 6/8, 9/8, 12/8,
+  subdivisi tambahan, dan penolakan input di luar batas.
+- `src/audio/metronome.test.ts`: uji jumlah langkah, posisi aksen,
+  dan waktu pergantian birama sesuai keputusan pengguna.
+- `src/components/custom-time-signature-dialog.test.tsx`: uji
+  pratinjau, validasi input, penerapan pilihan, dan pembatalan.
+
+### Verifikasi Manual
+
+1. Pilih 6/8 dengan subdivisi 1. Pastikan setiap bar berisi 6 langkah
+   dengan aksen pada langkah pertama dan keempat.
+2. Buka Kustom, isi 7/8, lalu pilih Terapkan. Pastikan pilihan menjadi
+   7/8 dan pratinjau menampilkan 7 ketukan serta 7 langkah.
+3. Masukkan pembilang 0 atau 33. Pastikan pesan validasi tampil dan
+   pilihan tidak dapat diterapkan.
+4. Ubah pembilang lalu pilih Batal. Pastikan tanda birama sebelumnya
+   tetap aktif.
+5. Saat metronom berjalan, ganti tanda birama. Pastikan waktu
+   penerapannya mengikuti keputusan yang disetujui pada Open Questions.
+````
