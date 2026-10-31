@@ -1,7 +1,7 @@
 ---
 name: antigravity-plan
 license: MIT
-description: Write implementation plans in the Antigravity `implementation_plan.md` format (goal description, User Review Required, Open Questions, Proposed Changes with [NEW]/[MODIFY]/[DELETE] file entries, Verification Plan). Use this skill whenever the user asks for a plan, implementation plan, design doc, or "plan this before coding" for a feature, refactor, bugfix, or migration, in any language, or mentions Antigravity-style plans, even if they don't name the format. Produces a reviewable markdown plan and stops for approval before any code is written.
+description: Write implementation plans in the Antigravity `implementation_plan.md` format (goal description, User Review Required, Open Questions, Proposed Changes with [NEW]/[MODIFY]/[DELETE] file entries, Verification Plan). Use this skill whenever the user asks for a plan, implementation plan, design doc, or "plan this before coding" for a feature, refactor, bugfix, or migration, in any language, or mentions Antigravity-style plans, even if they don't name the format. Respond with the full Markdown plan in chat and wait for approval before coding. Save a plan file only when the user explicitly requests it.
 ---
 
 # Antigravity Plan
@@ -11,9 +11,10 @@ Produce an implementation plan in the structure used by Google Antigravity's pla
 ## Workflow
 
 1. **Explore first.** Read the relevant code, schema, and existing tests before writing. A plan that names real files, functions, and constraints is useful; a generic one is not.
-2. **Write the plan** to `implementation_plan.md` (project root, or `docs/plans/<slug>.md` if the repo already has a plans folder). If the tool can only reply in chat, output it inline.
-3. **Stop and ask for review.** Do not edit source files until the user approves. If the user answers Open Questions or requests changes, update the same plan file instead of creating a new one.
-4. After approval, implement section by section following `Proposed Changes`, then run the `Verification Plan`.
+2. **Respond with the plan in chat.** Use the template below for the next user-facing planning response. Render the full plan as Markdown, including its headings, alerts, and file entries; do not wrap the whole plan in a code fence or substitute a file path or summary for it.
+3. **Save only on explicit request.** Planning requests authorize a chat response, not file creation or updates. Create or update a plan file only if the user explicitly asks to save, export, or edit one. Honor their requested path; if they request a file without specifying a path, use `implementation_plan.md` in the project root, or `docs/plans/<slug>.md` if the repo already uses that plans directory. A writable workspace, an existing plan file, or a tool's artifact convention is not a request to write a file. Keep the full plan in chat even when saving is requested.
+4. **Stop and ask for review.** Do not edit source files until the user approves. If the user answers Open Questions or requests changes, present the revised plan in chat. If they requested a saved plan, update that same file too.
+5. After approval, implement section by section following `Proposed Changes`, then run the `Verification Plan`.
 
 ## Language
 
@@ -141,6 +142,7 @@ Include only alerts that carry a real decision or risk. An empty or filler alert
 ## Quality checklist
 
 Before presenting the plan, check:
+- The full plan is the chat response, and any plan file creation or update was explicitly requested by the user.
 - Every file path comes from code you actually inspected.
 - Every risky or irreversible step has a `[!WARNING]` and a confirmation or rollback story.
 - Each Proposed Changes section can be implemented without reading the others out of order.
@@ -151,6 +153,6 @@ Before presenting the plan, check:
 ## Porting to other tools
 
 The format is plain markdown, so it transfers as-is. Adjust only these when the host tool differs:
-- Keep the file name `implementation_plan.md` so the plan is discoverable.
+- Apply the chat response and explicit-save rules from Workflow in every host tool.
 - Replace `file:///` links with repo-relative backticked paths if links do not resolve.
 - If the tool renders GitHub alerts poorly, the `> [!TYPE]` lines still read as labeled blockquotes; leave them in place.

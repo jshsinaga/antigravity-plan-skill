@@ -4,8 +4,9 @@
 
 An agent skill for writing reviewable implementation plans in the Antigravity
 `implementation_plan.md` style. It explores the project, describes changes per
-file, records decisions and blocking questions, and waits for approval before
-editing source files.
+file, records decisions and blocking questions, and presents the full plan in
+chat. It waits for approval before editing source files and saves a plan file
+only when you explicitly ask.
 
 ## Install
 
@@ -23,6 +24,21 @@ To inspect the available skill without installing it:
 ```sh
 npx skills add jshsinaga/antigravity-plan-skill --list
 ```
+
+## Update
+
+After a new version is pushed, run the install command again to fetch the
+current repository contents and replace the installed copy for the selected
+agents. Installed copies do not refresh just because this repository changes.
+
+You can also update the installed skill by name:
+
+```sh
+npx skills update antigravity-plan
+```
+
+Use `-g` if you originally installed globally. See the
+[official update reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#skills-update).
 
 ## Use
 
@@ -46,10 +62,19 @@ The resulting plan includes:
 - `Verification Plan`, with automated commands and manual checks.
 
 Plans follow the language of your request while preserving the four anchor
-headings in English. The agent writes `implementation_plan.md`, or
-`docs/plans/<slug>.md` when the project already uses that plans directory, and
-waits for your approval. Answer questions or request revisions in the same plan,
-then approve implementation.
+headings in English. The agent's next planning response contains the full plan
+directly in chat, with rendered Markdown headings and alerts. Answer questions
+or request revisions in chat, then approve implementation.
+
+To save a plan as well, explicitly ask for a file, for example:
+
+```text
+Save this plan to docs/plans/password-reset.md.
+```
+
+If you request a file without a path, the default is `implementation_plan.md`,
+or `docs/plans/<slug>.md` when the project already uses that plans directory.
+An existing plan file does not cause the agent to write to it automatically.
 
 ## Skill source
 
@@ -84,8 +109,10 @@ format. This project is not affiliated with or endorsed by Google.
 ## Example plan
 
 The header image shows a plan for custom time signatures and compound meter.
-The example below demonstrates the same format in Bahasa Indonesia, including
-the four English anchor headings, review decisions, file changes, and checks.
+The example below shows the Markdown source of a chat response in Bahasa
+Indonesia, including the four English anchor headings, review decisions, file
+changes, and checks. The agent renders this plan directly in chat; saving it
+as a file requires an explicit request.
 
 This example uses a fictional TypeScript metronome project. Its file paths,
 symbols, and npm scripts are illustrative. For your project, the agent must
