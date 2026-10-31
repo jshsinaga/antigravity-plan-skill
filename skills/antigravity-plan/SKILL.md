@@ -1,5 +1,6 @@
 ---
 name: antigravity-plan
+license: MIT
 description: Write implementation plans in the Antigravity `implementation_plan.md` format (goal description, User Review Required, Open Questions, Proposed Changes with [NEW]/[MODIFY]/[DELETE] file entries, Verification Plan). Use this skill whenever the user asks for a plan, implementation plan, design doc, or "plan this before coding" for a feature, refactor, bugfix, or migration, in any language, or mentions Antigravity-style plans, even if they don't name the format. Produces a reviewable markdown plan and stops for approval before any code is written.
 ---
 

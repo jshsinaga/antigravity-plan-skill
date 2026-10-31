@@ -74,3 +74,7 @@ is no separate package upload step; directory visibility can lag installation.
 
 An independent, community skill inspired by Google Antigravity's planning
 format. This project is not affiliated with or endorsed by Google.
+
+## License
+
+[MIT](LICENSE), copyright (c) 2026 Josua Sinaga.
